@@ -144,6 +144,9 @@ def main():
     for i, data in enumerate(raw_datas):
         if i>=30:
             break
+        # 跳过已经完成的任务
+        if i in finished_tasks:
+            continue
         add_task(str(i), [], [i, data["text"]])
 
     
