@@ -7,14 +7,19 @@ import os
 #         data = json.loads(line)
 #         print(data["completion"])
 
-# file_name = "Verilog_Description_v1.jsonl"
+file_name = "./data/Verilog_Description_v1.jsonl"
+with open(file_name, "r", encoding='utf-8') as fp:
+    i = 0
+    for line in fp:
+        data = json.loads(line)
+        print(data["completion"])
+        i = i+1
+        if i == 2:
+            break
+
+
+# file_name = "./data/Verilog_R1_Think_v1.jsonl"
 # with open(file_name, "r", encoding='utf-8') as fp:
 #     for line in fp:
 #         data = json.loads(line)
 #         print(data["completion"])
-
-file_name = "./data/Verilog_R1_Think_v1.jsonl"
-with open(file_name, "r", encoding='utf-8') as fp:
-    for line in fp:
-        data = json.loads(line)
-        print(data["completion"])
