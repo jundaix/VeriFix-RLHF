@@ -1,24 +1,20 @@
 import json
 from VeriFix_RLHF.data import write_jsonl, read_data
+
+from VeriFix_RLHF.data_manager import VerilogDataManager
 # 读取输入数据
-desc_data = read_data('./data/Verilog_Description_v1.jsonl')
-defn_data = read_data('./data/Verilog_Definition_v1.jsonl')
+desc_data = read_data('./data/Verilog_Description_v2.jsonl')
+defn_data = read_data('./data/Verilog_Definition_v2.jsonl')
 
 # 读取输出数据
-think_data = read_data('./data/Verilog_R1_Think_v1.jsonl')
-code_data = read_data('./data/Verilog_R1_Code_v1.jsonl')
+think_data = read_data('./data/Verilog_R1_Think_v2.jsonl')
+code_data = read_data('./data/Verilog_R1_Code_v2.jsonl')
+
+# 载入数据
+data_manager = VerilogDataManager(version="v2")
 
 # 验证数据一致性
 assert len(desc_data) == len(defn_data) == len(think_data) == len(code_data), "文件行数不一致"
-
-# 构建输出映射字典（task_id到思考+代码的映射）
-output_map = {}
-for t, c in zip(think_data, code_data):
-    task_id = t['task_id']
-    output_map[task_id] = (
-        t['completion'].strip(),
-        c['completion'].strip()
-    )
 
 # 生成最终数据集
 dataset = []
@@ -30,9 +26,10 @@ for idx in range(len(desc_data)):
         "请你基于模块描述和定义，补全剩余代码，补全的代码中不要输出定义部分内容，"
         "但是要用verilog格式输出，用endmodule结束。"
     )
-    
-    # 获取对应输出内容
-    think, code = output_map.get(idx, ("", ""))
+    data = data_manager.get_completions(desc_data[idx]["task_id"])
+
+    think = data["think"]
+    code = data["code"]
     output = f"<think>{think}</think>\n\n{code}".strip()
     
     # 构建最终数据对象
